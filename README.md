@@ -28,48 +28,100 @@ This repository contains quick notes and examples of C++ STL for fast revision.
 
 - ---
 
-# 📝 std::accumulate(begin_iterator, end_iterator, initial_sum)
+## 📝 std::accumulate(begin_iterator, end_iterator, initial_sum)
 
-### 🔹 Syntax
-```cpp
-int sum = 0;
-vector<int> nums{1, 3, 2, 5};
-sum = accumulate(begin(nums), end(nums), 0);
-
-cout << sum; //11
-
-Benefit : You didn't have to write for loop to find the sum
-accumulate(begin_iterator, end_iterator, initial_value);
 ---
-📝 std::accumulate(begin_iterator, end_iterator, initial_sum, lambda) ➕
+
+### 🔹 Basic Usage
+
 ```cpp
-lambda : Binary operation taking an element of type <initial_sum> as first argument and an
-            element in the range as second, and which returns a value that can be assigned to type T.
+#include <bits/stdc++.h>
+using namespace std;
 
-Example-1 : 
+int main() {
+    int sum = 0;
+    vector<int> nums{1, 3, 2, 5};
 
-auto lambda = [&](int s, long n) {
-    return s + n*n; //sums the square of numbers
-    //You can call any other function inside as well
-};
+    sum = accumulate(begin(nums), end(nums), 0);
 
-int sum = 0;
-vector<int> nums{1, 3, 2, 5};
-sum = accumulate(begin(nums), end(nums), 0, lambda);
+    cout << sum; // 11
+}
+```
 
-cout << sum; //39
+### ✅ Benefit
 
-Example-2 : Handling 2-D matrix
-//Summming all elements row by row
-auto lambda = [&](int sum, vector<int> vec) {
-    sum = sum + accumulate(begin(vec), end(vec), 0);
-    return sum;
-};
+- No need to write a for loop
+- Cleaner and shorter code
+- Very useful in competitive programming
 
-int result =  accumulate(matrix.begin(), matrix.end(), 0, lambda);
-
-
-Beautiful example and usage :
-Leetcode-1577 
-Leetcode-1572 
 ---
+
+## 📝 std::accumulate(begin_iterator, end_iterator, initial_sum, lambda)
+
+### 🔹 Lambda Version Syntax
+
+```cpp
+accumulate(begin_iterator, end_iterator, initial_value, lambda);
+```
+
+🔹 **Lambda Explanation**
+
+Lambda is a binary operation:
+- First parameter → accumulated value
+- Second parameter → current element
+- Must return updated accumulated value
+
+---
+
+### 🔹 Example 1: Sum of Squares
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+
+    auto lambda = [&](int s, long n) {
+        return s + n * n;   // sums square of numbers
+    };
+
+    int sum = 0;
+    vector<int> nums{1, 3, 2, 5};
+
+    sum = accumulate(begin(nums), end(nums), 0, lambda);
+
+    cout << sum; // 39
+}
+```
+
+---
+
+### 🔹 Example 2: Handling 2D Matrix
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+
+    vector<vector<int>> matrix{
+        {1, 2},
+        {3, 4}
+    };
+
+    auto lambda = [&](int sum, vector<int> vec) {
+        return sum + accumulate(begin(vec), end(vec), 0);
+    };
+
+    int result = accumulate(matrix.begin(), matrix.end(), 0, lambda);
+
+    cout << result; // 10
+}
+```
+
+---
+
+### 🔥 Beautiful Example Usage
+
+- LeetCode 1572 (Matrix Diagonal Sum)
+- LeetCode 1577
