@@ -26,6 +26,16 @@ This repository contains quick notes and examples of C++ STL for fast revision.
 - Clean STL syntax examples
 - Beginner friendly explanations
 
+- ---
+
+# 📝 std::accumulate(begin_iterator, end_iterator, initial_sum)
+
+### 🔹 Syntax
+
+```cpp
+accumulate(begin_iterator, end_iterator, initial_value);
+
+
 ---
 
 ## 💻 Language
