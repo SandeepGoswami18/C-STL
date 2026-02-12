@@ -31,6 +31,13 @@ This repository contains quick notes and examples of C++ STL for fast revision.
 # 📝 std::accumulate(begin_iterator, end_iterator, initial_sum)
 
 ### 🔹 Syntax
+int sum = 0;
+vector<int> nums{1, 3, 2, 5};
+sum = accumulate(begin(nums), end(nums), 0);
+
+cout << sum; //11
+
+Benefit : You didn't have to write for loop to find the sum
 
 ```cpp
 accumulate(begin_iterator, end_iterator, initial_value);
