@@ -1,233 +1,258 @@
-# 🚀 C++ STL Quick Help (With Explanation + Examples)
+# 🚀 C++ STL Quick Help
 
-This file contains **most used + important STL utilities**  
-with explanation of:
+It contains C++ STL usage and quick help with easy to understand comments and examples (copy + paste to use).  
+I learned these while solving different kinds of problems.
 
-✔ What it does  
-✔ When to use it  
-✔ Small example  
-✔ Leetcode number tags  
+I am using simple types like `int`, `string` etc for clarity.  
+You can replace them with any data structure as needed.
 
-All examples use simple types (`int`, `string`) for clarity.
+🔎 EASY + IMPORTANT + MOST USED examples  
 
----
-
-# 🗻 priority_queue (Heap)
-
-## 🔹 What?
-Stores elements in heap order.
-
-Default → **Max Heap**
+I have also added Leetcode question numbers where these STLs are useful.
 
 ---
 
-## ✅ Max Heap (Default)
+# 📝 Different ways of using **priority_queue (Heap)** 🗻
+
+## **Default Declarations (Max Heap)**
 
 ```cpp
-priority_queue<int> pq;
-
-pq.push(10);
-pq.push(5);
-pq.push(20);
-
-cout << pq.top(); // 20 (largest element)
+priority_queue<int> pq;                          
+priority_queue<int, vector<int>> pq;             
 ```
-
-### 📌 When to use?
-- Find K largest elements
-- Maintain running maximum
-- Scheduling problems
-
-LC: 215, 703
 
 ---
 
-## ✅ Min Heap
+## **Using In-built Comparator (Min Heap)**
 
 ```cpp
 priority_queue<int, vector<int>, greater<int>> pq;
 
-pq.push(10);
-pq.push(5);
-pq.push(20);
+priority_queue<pair<int, int>,
+               vector<pair<int, int>>,
+               greater<pair<int, int>>> pq;
 
-cout << pq.top(); // 5 (smallest element)
-```
-
-### 📌 When to use?
-- K smallest elements
-- Dijkstra algorithm
-- Merge K sorted lists
-
-LC: 347
-
----
-
-# ⬅️ std::move()
-
-## 🔹 What?
-Transfers ownership of data (avoids copying).
-
----
-
-```cpp
-string a = "Hello";
-string b = move(a);
-
-cout << a; // empty
-cout << b; // Hello
-```
-
-### 📌 When to use?
-- Passing large vectors
-- Returning large objects
-- Avoiding copy overhead
-
----
-
-# ➕ std::accumulate()
-
-## 🔹 What?
-Used to sum or combine elements.
-
----
-
-## Basic Sum
-
-```cpp
-vector<int> v{1,2,3,4};
-int sum = accumulate(v.begin(), v.end(), 0);
-cout << sum; // 10
+priority_queue<pair<int, int>,
+               vector<pair<int, int>>,
+               greater<>> pq;
 ```
 
 ---
 
-## Custom Logic (Sum of Squares)
+## **User Defined Comparator (Struct)**
 
 ```cpp
-int sum = accumulate(v.begin(), v.end(), 0,
-    [](int s, int x){
-        return s + x*x;
+struct comp {
+    bool operator()(int &a, int &b) {
+        return a > b; // Min Heap
+    }
+};
+
+priority_queue<int, vector<int>, comp> pq;
+```
+
+---
+
+## **User Defined Comparator (Function)**
+
+```cpp
+static bool comp(int &a, int &b) {
+    return a > b; // Min Heap
+}
+
+priority_queue<int,
+               vector<int>,
+               function<bool(int&, int&)>> pq(comp);
+```
+
+---
+
+## **Using Lambda Function**
+
+```cpp
+auto comp = [](int &a, int &b) {
+    return a > b; // Min Heap 
+};
+
+priority_queue<int,
+               vector<int>,
+               decltype(comp)> pq(comp);
+```
+
+### **Capturing External Variables**
+
+```cpp
+unordered_map<int, int> mp;
+
+auto comp = [&mp](int &a, int &b) {
+    return mp[a] < mp[b];
+};
+```
+
+LC: 215, 347, 703
+
+---
+
+# 📝 When and Why to use **std::move()** ⬅️
+
+Transfers resources efficiently without copying.
+
+```cpp
+string source = "MIK";
+string target = move(source);
+
+cout << source; // empty
+cout << target; // MIK
+```
+
+### Example with vector
+
+```cpp
+vector<int> temp{1, 2, 3};
+vector<vector<int>> result;
+
+result.push_back(move(temp));
+```
+
+After moving, `temp` becomes empty.
+
+---
+
+# 📝 **std::accumulate()** ➕
+
+## Basic Usage
+
+```cpp
+vector<int> nums{1, 3, 2, 5};
+int sum = accumulate(begin(nums), end(nums), 0);
+
+cout << sum; // 11
+```
+
+---
+
+## With Lambda (Custom Logic)
+
+```cpp
+int sum = accumulate(begin(nums), end(nums), 0,
+    [](int s, int n) {
+        return s + n*n;
     });
 
-cout << sum; // 30
+cout << sum; // 39
 ```
-
-### 📌 When to use?
-- Prefix logic
-- Matrix sum
-- Custom reduction
-
-LC: 1572
 
 ---
 
-# 😲 min_element / max_element
-
-## 🔹 What?
-Find smallest or largest element.
+## Handling 2D Matrix
 
 ```cpp
-vector<int> v{5,1,9,3};
-
-int mn = *min_element(v.begin(), v.end());
-int mx = *max_element(v.begin(), v.end());
-
-cout << mn; // 1
-cout << mx; // 9
+int result = accumulate(matrix.begin(), matrix.end(), 0,
+    [](int sum, vector<int> row) {
+        return sum + accumulate(begin(row), end(row), 0);
+    });
 ```
 
-### 📌 When to use?
-- Find max/min in array quickly
-- Avoid manual loop
+LC: 1577, 1572
 
 ---
 
-# 📤 lower_bound / upper_bound
-
-⚠ Works only on sorted array
+# 📝 **min_element / max_element / minmax_element** 😲
 
 ```cpp
-vector<int> v{1,2,4,4,5};
+vector<int> nums{1, 3, 2, 5};
 
-auto it = lower_bound(v.begin(), v.end(), 4);
-cout << (it - v.begin()); // index of first 4
+int minimumValue = *min_element(begin(nums), end(nums));
+int maximumValue = *max_element(begin(nums), end(nums));
 ```
 
-### 📌 Difference:
-- lower_bound → first ≥ value
-- upper_bound → first > value
-
-### 📌 When to use?
-- Binary search
-- First/last occurrence problems
-- Range queries
-
-LC: 744, 981
-
----
-
-# 🌀 std::rotate()
-
-## 🔹 Left Rotate
+OR
 
 ```cpp
-vector<int> v{1,2,3,4};
+auto itr  = minmax_element(begin(nums), end(nums));
 
-rotate(v.begin(), v.begin()+1, v.end());
-// Result: 2 3 4 1
+int minimumValue  = *itr.first;  
+int maximumValue  = *itr.second;
 ```
-
-### 📌 When to use?
-- Array rotation problems
 
 ---
 
-# 🔁 Check String Rotation
+# 📝 **upper_bound() / lower_bound()** 📤
+
+⚠ Works on sorted containers
+
+```cpp
+vector<int> vec{10,20,30,40};
+
+auto up  = upper_bound(begin(vec), end(vec), 35);
+auto low = lower_bound(begin(vec), end(vec), 35);
+```
+
+For set:
+
+```cpp
+st.upper_bound(35);
+st.lower_bound(35);
+```
+
+For map:
+
+```cpp
+mp.upper_bound(35);
+mp.lower_bound(35);
+```
+
+LC: 729, 981, 744, 1351
+
+---
+
+# 📝 **std::rotate()** 🌀
+
+```cpp
+vector<int> vec{1, 2, 3, 4};
+
+rotate(vec.begin(), vec.begin()+2, vec.end());   
+rotate(vec.begin(), vec.end()-2, vec.end());     
+```
+
+---
+
+# 📝 Check if String Rotation Possible 🌀
 
 ```cpp
 string s = "abcde";
 string t = "cdeab";
 
-bool ans = (s.size()==t.size() &&
-           (s+s).find(t)!=string::npos);
+bool ans = (s.length() == t.length() &&
+           (s+s).find(t) != string::npos);
 ```
-
-### 📌 When to use?
-- Rotation validation problems
 
 ---
 
-# ➡️ next_permutation()
+# 📝 **std::next_permutation()** ➡️
 
 ```cpp
-vector<int> v{1,2,3};
+vector<int> vec{1, 2, 3};
 
-next_permutation(v.begin(), v.end());
-
-// v becomes 1 3 2
+if(next_permutation(begin(vec), end(vec))){
+    // next permutation generated
+}
 ```
-
-### 📌 When to use?
-- Generate permutations
-- Next lexicographic arrangement
 
 LC: 31
 
 ---
 
-# ⏩ stringstream
+# 📝 **std::stringstream** ⏩
 
-## Convert String to Integer
+## Convert String to Number
 
 ```cpp
-string s = "123";
+string s = "12345";
 stringstream ss(s);
 
 int x;
 ss >> x;
-
-cout << x; // 123
 ```
 
 ---
@@ -235,144 +260,131 @@ cout << x; // 123
 ## Count Words
 
 ```cpp
-stringstream ss("hello world");
+stringstream ss("hello world here");
 string word;
-int count=0;
+int count = 0;
 
-while(ss >> word)
+while (ss >> word)
     count++;
-
-cout << count; // 2
 ```
-
-### 📌 When to use?
-- Parsing input
-- Reverse words problems
-
-LC: 151, 165
 
 ---
 
-# 🤖 std::transform()
-
-## Lowercase
+## Extract Numbers from String
 
 ```cpp
-string s = "HELLO";
+string complex = "1+1i";
+stringstream ss(complex);
 
-transform(s.begin(), s.end(), s.begin(), ::tolower);
+char skip;
+int real, imag;
 
-cout << s; // hello
+ss >> real >> skip >> imag >> skip;
 ```
 
-### 📌 When to use?
-- String manipulation
-- Case conversion problems
+LC: 151, 165, 537, 1108
 
 ---
 
-# 📟 std::regex_replace()
-
-## Remove vowels
+# 📝 **std::transform()** 🤖
 
 ```cpp
-string s = "mika";
+transform(begin(s), end(s), begin(s), ::tolower);
+transform(begin(s), end(s), begin(s), ::toupper);
+```
+
+---
+
+# 📝 **std::regex_replace()** 📟
+
+```cpp
 regex rgx("[aeiouAEIOU]");
-
 string result = regex_replace(s, rgx, "");
-cout << result; // mk
 ```
 
-### 📌 When to use?
-- Pattern based replacement
-- String cleanup problems
+```cpp
+regex rgx("\\.");
+string result = regex_replace(s, rgx, "[.]");
+```
 
-LC: 1108
+LC: 1108, 1119
 
 ---
 
-# 🔢 std::count_if()
+# 📝 **std::count_if()** 🔢
 
 ```cpp
-vector<int> v{1,0,3,0,5};
+vector<int> vec{1, 3, 2, 0, 5, 0};
 
-int cnt = count_if(v.begin(), v.end(),
+int count = count_if(begin(vec), end(vec),
     [](int x){
-        return x==0;
+        return x == 0;
     });
-
-cout << cnt; // 2
 ```
-
-### 📌 When to use?
-- Count elements with condition
 
 LC: 1773
 
 ---
 
-# 🔢 std::copy_if()
+# 📝 **std::copy_if()** 🔢
 
 ```cpp
-vector<int> from{1,2,3,4,5};
-vector<int> to;
+vector<int> from_vec{1,2,3,4,5,6};
+vector<int> to_vec;
 
-copy_if(from.begin(), from.end(),
-        back_inserter(to),
-        [](int x){
-            return x%2==0;
-        });
-
-// to = {2,4}
+copy_if(from_vec.begin(), from_vec.end(),
+        back_inserter(to_vec),
+        [](int n){ return n%2==0; });
 ```
 
-### 📌 When to use?
-- Filtering data
+LC: 1796
 
 ---
 
-# 🔢 set_difference()
+# 📝 **set_difference() & back_inserter()** 🔢
 
 ```cpp
-set<int> s1{1,2,3};
-set<int> s2{2,3};
+set<int> st1{1,2,3};
+set<int> st2{2,3};
 
-vector<int> result;
+vector<int> v1;
 
-set_difference(s1.begin(), s1.end(),
-               s2.begin(), s2.end(),
-               back_inserter(result));
-
-// result = {1}
+set_difference(begin(st1), end(st1),
+               begin(st2), end(st2),
+               back_inserter(v1));
 ```
-
-### 📌 When to use?
-- Find unique elements between sets
 
 LC: 2215
 
 ---
 
-# 📐 std::hypot()
+# 📝 **std::hypot()** 📐
+
+## 2D Distance
 
 ```cpp
-double dist = hypot(3.0,4.0);
-cout << dist; // 5
+double result = hypot(3.0, 4.0);
+cout << result; // 5.0
 ```
 
-### 📌 When to use?
-- Distance calculation
-- Geometry problems
+## 3D Distance (C++17)
+
+```cpp
+double dist3D = hypot(1.0, 2.0, 2.0);
+```
+
+✔ Numerically stable  
+✔ Cleaner than sqrt(x*x + y*y)
 
 LC: 812
 
 ---
 
-# 🎯 Final Advice
+# 🎯 Final Notes
 
-✔ STL reduces code length  
+✔ STL reduces code size  
 ✔ STL improves readability  
-✔ Know when to use it  
-✔ Practice in real problems  
+✔ Learn when to use it  
+✔ Practice using real problems  
 
 Happy Coding 🚀
