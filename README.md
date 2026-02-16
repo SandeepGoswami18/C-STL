@@ -1,390 +1,199 @@
-# 🚀 C++ STL Quick Help
+C++ STL Quick Help
+It contains C++ STLs usage and quick help with easy to understand comments and examples (copy+paste to use). I learned these while solving different kinds of Leetcode Questions.
+I will be using "int, string etc" for ease and not complex entities like pairs, structs etc 😉. You can replace it with any data structure If you are confused with the syntax or description, see the example. I am sure that will clear things BECAUSE I have specifically chosen
+🔎 "EASY + IMPORTANT + MOST USED" examples. Last but not least, I have added Leetcode Qns also which can be easily solved using STLs
 
-It contains C++ STL usage and quick help with easy to understand comments and examples (copy + paste to use).  
-I learned these while solving different kinds of problems.
+📝Different ways of using priority_queue (i.e. heap) 🗻
+Default declarations
+priority_queue<int> pq;                            //creates max-heap
+priority_queue<int, vector<int>> pq;               //creates max-heap
 
-I am using simple types like `int`, `string` etc for clarity.  
-You can replace them with any data structure as needed.
+writing comparator function for priority_queue
+1. Using in-built comparator provided by C++ : 
 
-🔎 EASY + IMPORTANT + MOST USED examples  
+priority_queue<int, vector<int>, greater<int>> pq;  //creates min-heap
+priority_queue< pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > pq; //min_heap of pairs
+priority_queue< pair<int, int>, vector<pair<int, int>>, greater<> > pq;               //min_heap of pairs
+2. Using user defined comparator as a structure
 
-I have also added Leetcode question numbers where these STLs are useful.
-
----
-
-# 📝 Different ways of using **priority_queue (Heap)** 🗻
-
-## **Default Declarations (Max Heap)**
-
-```cpp
-priority_queue<int> pq;                          
-priority_queue<int, vector<int>> pq;             
-```
-
----
-
-## **Using In-built Comparator (Min Heap)**
-
-```cpp
-priority_queue<int, vector<int>, greater<int>> pq;
-
-priority_queue<pair<int, int>,
-               vector<pair<int, int>>,
-               greater<pair<int, int>>> pq;
-
-priority_queue<pair<int, int>,
-               vector<pair<int, int>>,
-               greater<>> pq;
-```
-
----
-
-## **User Defined Comparator (Struct)**
-
-```cpp
 struct comp {
     bool operator()(int &a, int &b) {
-        return a > b; // Min Heap
+        return a<b; //max-heap
+        return a>b; //min-heap
     }
 };
 
-priority_queue<int, vector<int>, comp> pq;
-```
+priority_queue<int, vector<int>, comp> pq;  //usage
+3. Using user defined comparator as a function
 
----
-
-## **User Defined Comparator (Function)**
-
-```cpp
 static bool comp(int &a, int &b) {
-    return a > b; // Min Heap
+    return a<b; //max-heap
+    return a>b; //min-heap
 }
 
-priority_queue<int,
-               vector<int>,
-               function<bool(int&, int&)>> pq(comp);
-```
+priority_queue<int, vector<int>, function<bool(int&, int&)> > pq(comp);   //usage
+4. Using lambda function
 
----
-
-## **Using Lambda Function**
-
-```cpp
 auto comp = [](int &a, int &b) {
-    return a > b; // Min Heap 
+    return a<b; //max-heap
+    return a>b; //min-heap 
 };
 
-priority_queue<int,
-               vector<int>,
-               decltype(comp)> pq(comp);
-```
+priority_queue<int, vector<int>, decltype(comp) > pq(comp);   //usage
 
-### **Capturing External Variables**
-
-```cpp
+NOTE :
+You can receive parameters inside [] as well i.e. auto comp = [some_parameters]
+Ex : You want to access a map inside this lambda function
 unordered_map<int, int> mp;
 
 auto comp = [&mp](int &a, int &b) {
-    return mp[a] < mp[b];
+    return mp[a] < mp[b]; //etc.
 };
-```
 
-LC: 215, 347, 703
+📝 When and why to use std::move() ⬅️
+/*
+    To efficiently transfer the resources from source to target.
+    By efficient, I mean no usage of extra space and time for creating copy.
+*/
+Examples :
+    string source = "MIK";
+    string target = "";
+    target = std::move(source);
+    cout << " source = " << source << endl;
+    cout << "target = "  << target << endl;
+    /*
+        output :
+        source = 
+        target = "MIK"
+    */
+    
+    vector<string> v;
+    string str = "example";
+    v.push_back(std::move(str));
+    /*
+    After this, str becomes empty i.e. ""
+    And while moving str inside v, no extra copy of str was done implicitly.
+    */
 
----
+    vector<int> temp{1, 2, 3};
+    vector<vector<int>> result;
+    result.push_back(std::move(temp));
+    /*
+    This allows no copy of "temp" being created.
+    It ensures that the contents of "temp"
+    will be moved into the "result".  This is less
+    expensive, also means temp will now be empty.
+    */
 
-# 📝 When and Why to use **std::move()** ⬅️
-
-Transfers resources efficiently without copying.
-
-```cpp
-string source = "MIK";
-string target = move(source);
-
-cout << source; // empty
-cout << target; // MIK
-```
-
-### Example with vector
-
-```cpp
-vector<int> temp{1, 2, 3};
-vector<vector<int>> result;
-
-result.push_back(move(temp));
-```
-
-After moving, `temp` becomes empty.
-
----
-
-# 📝 **std::accumulate()** ➕
-
-## Basic Usage
-
-```cpp
+📝 std::accumulate(begin_iterator, end_iterator, initial_sum) ➕
+int sum = 0;
 vector<int> nums{1, 3, 2, 5};
-int sum = accumulate(begin(nums), end(nums), 0);
+sum = accumulate(begin(nums), end(nums), 0);
 
-cout << sum; // 11
-```
+cout << sum; //11
 
----
+📝 std::accumulate(begin_iterator, end_iterator, initial_sum, lambda) ➕
+Example-1 : 
 
-## With Lambda (Custom Logic)
+auto lambda = [&](int s, long n) {
+    return s + n*n;
+};
 
-```cpp
-int sum = accumulate(begin(nums), end(nums), 0,
-    [](int s, int n) {
-        return s + n*n;
-    });
+int sum = 0;
+vector<int> nums{1, 3, 2, 5};
+sum = accumulate(begin(nums), end(nums), 0, lambda);
 
-cout << sum; // 39
-```
+cout << sum; //39
 
----
+Example-2 : Handling 2-D matrix
+auto lambda = [&](int sum, vector<int> vec) {
+    sum = sum + accumulate(begin(vec), end(vec), 0);
+    return sum;
+};
 
-## Handling 2D Matrix
+int result =  accumulate(matrix.begin(), matrix.end(), 0, lambda);
 
-```cpp
-int result = accumulate(matrix.begin(), matrix.end(), 0,
-    [](int sum, vector<int> row) {
-        return sum + accumulate(begin(row), end(row), 0);
-    });
-```
-
-LC: 1577, 1572
-
----
-
-# 📝 **min_element / max_element / minmax_element** 😲
-
-```cpp
+📝 min_element(begin_iterator, end_iterator), max_element(begin_iterator, end_iterator), minmax_element(begin_iterator, end_iterator) 😲
 vector<int> nums{1, 3, 2, 5};
 
 int minimumValue = *min_element(begin(nums), end(nums));
 int maximumValue = *max_element(begin(nums), end(nums));
-```
 
-OR
-
-```cpp
 auto itr  = minmax_element(begin(nums), end(nums));
+int minimumValue2  = *itr.first;
+int maximumValue2  = *itr.second;
 
-int minimumValue  = *itr.first;  
-int maximumValue  = *itr.second;
-```
+📝 upper_bound(), lower_bound() in sorted vector, ordered set, ordered map 📤
+vector<int> vec{10,20,30,30,20,10,10,20};
 
----
+vector<int>::iterator up  = upper_bound(begin(vec), end(vec), 35);
+vector<int>::iterator low = lower_bound(begin(vec), end(vec), 35);
 
-# 📝 **upper_bound() / lower_bound()** 📤
-
-⚠ Works on sorted containers
-
-```cpp
-vector<int> vec{10,20,30,40};
-
-auto up  = upper_bound(begin(vec), end(vec), 35);
-auto low = lower_bound(begin(vec), end(vec), 35);
-```
-
-For set:
-
-```cpp
 st.upper_bound(35);
 st.lower_bound(35);
-```
 
-For map:
-
-```cpp
 mp.upper_bound(35);
 mp.lower_bound(35);
-```
 
-LC: 729, 981, 744, 1351
-
----
-
-# 📝 **std::rotate()** 🌀
-
-```cpp
+📝 std::rotate 🌀
 vector<int> vec{1, 2, 3, 4};
+int n = vec.size();
+int k = 2;
 
-rotate(vec.begin(), vec.begin()+2, vec.end());   
-rotate(vec.begin(), vec.end()-2, vec.end());     
-```
+rotate(vec.begin(), vec.begin()+k, vec.end());
+rotate(vec.begin(), vec.begin()+n-k, vec.end());
 
----
-
-# 📝 Check if String Rotation Possible 🌀
-
-```cpp
+📝 To check if some rotation of string s can become string t 🌀
 string s = "abcde";
 string t = "cdeab";
 
-bool ans = (s.length() == t.length() &&
-           (s+s).find(t) != string::npos);
-```
+cout << (s.length() == t.length() && (s+s).find(t) != string::npos) << endl;
 
----
+📝 std::next_permutation ➡️
+vector<int> vec{1, 2, 3, 4};
+    
+if(next_permutation(begin(vec), end(vec)))
+    cout << "Next permutation available" << endl;
 
-# 📝 **std::next_permutation()** ➡️
+for(int &x : vec)
+    cout << x << " ";
 
-```cpp
-vector<int> vec{1, 2, 3};
-
-if(next_permutation(begin(vec), end(vec))){
-    // next permutation generated
-}
-```
-
-LC: 31
-
----
-
-# 📝 **std::stringstream** ⏩
-
-## Convert String to Number
-
-```cpp
+📝 std::stringstream ⏩
 string s = "12345";
 stringstream ss(s);
-
-int x;
+int x = 0;
 ss >> x;
-```
+cout << x;
 
----
+📝 std::transform 🤖
+string line = "Hello world, this is MIK";
+transform(begin(line), end(line), begin(line), ::tolower);
+transform(begin(line), end(line), begin(line), ::toupper);
 
-## Count Words
+📝 std::regex_replace 📟
+string s2 = "mika";
+auto rgx = regex("[aeiouAEIOU]");
+cout << regex_replace(s2, rgx, "");
 
-```cpp
-stringstream ss("hello world here");
-string word;
-int count = 0;
+📝 std::count_if 🔢
+vector<int> vec2{1, 3, 2, 0, 5, 0};
+auto lambda2 = [&](const auto& i) {
+    return i == 0;
+};
+cout << count_if(begin(vec2), end(vec2), lambda2);
 
-while (ss >> word)
-    count++;
-```
-
----
-
-## Extract Numbers from String
-
-```cpp
-string complex = "1+1i";
-stringstream ss(complex);
-
-char skip;
-int real, imag;
-
-ss >> real >> skip >> imag >> skip;
-```
-
-LC: 151, 165, 537, 1108
-
----
-
-# 📝 **std::transform()** 🤖
-
-```cpp
-transform(begin(s), end(s), begin(s), ::tolower);
-transform(begin(s), end(s), begin(s), ::toupper);
-```
-
----
-
-# 📝 **std::regex_replace()** 📟
-
-```cpp
-regex rgx("[aeiouAEIOU]");
-string result = regex_replace(s, rgx, "");
-```
-
-```cpp
-regex rgx("\\.");
-string result = regex_replace(s, rgx, "[.]");
-```
-
-LC: 1108, 1119
-
----
-
-# 📝 **std::count_if()** 🔢
-
-```cpp
-vector<int> vec{1, 3, 2, 0, 5, 0};
-
-int count = count_if(begin(vec), end(vec),
-    [](int x){
-        return x == 0;
-    });
-```
-
-LC: 1773
-
----
-
-# 📝 **std::copy_if()** 🔢
-
-```cpp
-vector<int> from_vec{1,2,3,4,5,6};
+📝 std::copy_if 🔢
+vector<int> from_vec = {1,2,3,4,5,6,7,8,9,10};
 vector<int> to_vec;
+copy_if(from_vec.begin(), from_vec.end(), back_inserter(to_vec),[](int n){return n%2==0;});
 
-copy_if(from_vec.begin(), from_vec.end(),
-        back_inserter(to_vec),
-        [](int n){ return n%2==0; });
-```
-
-LC: 1796
-
----
-
-# 📝 **set_difference() & back_inserter()** 🔢
-
-```cpp
-set<int> st1{1,2,3};
-set<int> st2{2,3};
-
+📝 std::set_difference and std::back_inserter 🔢
+set<int> st1, st2;
 vector<int> v1;
+set_difference(begin(st1), end(st1), begin(st2), end(st2), back_inserter(v1));
 
-set_difference(begin(st1), end(st1),
-               begin(st2), end(st2),
-               back_inserter(v1));
-```
-
-LC: 2215
-
----
-
-# 📝 **std::hypot()** 📐
-
-## 2D Distance
-
-```cpp
-double result = hypot(3.0, 4.0);
-cout << result; // 5.0
-```
-
-## 3D Distance (C++17)
-
-```cpp
-double dist3D = hypot(1.0, 2.0, 2.0);
-```
-
-✔ Numerically stable  
-✔ Cleaner than sqrt(x*x + y*y)
-
-LC: 812
-
----
-
-# 🎯 Final Notes
-
-✔ STL reduces code size  
-✔ STL improves readability  
-✔ Learn when to use it  
-✔ Practice using real problems  
-
-Happy Coding 🚀
+📝 std::hypot 📐
+double x1 = 1, y1 = 2;
+double x2 = 4, y2 = 6;
+double dist = std::hypot(x2 - x1, y2 - y1);
+cout << dist;
